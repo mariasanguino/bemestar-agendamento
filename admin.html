@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Administrativo — Massagem Corporativa</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+  <!-- ===================== TELA: LOGIN ===================== -->
+  <div id="admin-login" class="admin-screen active">
+    <div class="login-wrap">
+      <img src="assets/logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none';" />
+      <h1 class="login-title">Área Administrativa</h1>
+      <p class="login-sub">Massagem Corporativa · 30/06/2026</p>
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="login-email">E-mail</label>
+          <input type="email" id="login-email" placeholder="admin@empresa.com.br" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label for="login-password">Senha</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <div id="login-error" class="form-error-msg" style="display:none;"></div>
+        <button type="submit" class="btn-primary" id="btn-login">
+          <span id="btn-login-text">Entrar</span>
+          <span id="btn-login-spinner" class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+      <a href="index.html" class="admin-back-link">← Voltar ao site</a>
+    </div>
+  </div>
+
+  <!-- ===================== TELA: PAINEL ===================== -->
+  <div id="admin-panel" class="admin-screen">
+
+    <!-- Admin Header -->
+    <header class="admin-header">
+      <div class="container admin-header-inner">
+        <div class="admin-brand">
+          <img src="assets/logo.png" alt="Logo" class="admin-logo" onerror="this.style.display='none';" />
+          <span class="admin-title-header">Painel Administrativo</span>
+        </div>
+        <div class="admin-header-actions">
+          <span class="admin-user-email" id="admin-user-email"></span>
+          <button class="btn-outline-sm" onclick="exportToExcel()">📥 Exportar Excel</button>
+          <button class="btn-outline-sm btn-logout" onclick="adminLogout()">Sair</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <section class="admin-dashboard">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-slots">26</span>
+            <span class="stat-label">Horários totais</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-vagas">52</span>
+            <span class="stat-label">Vagas totais</span>
+          </div>
+          <div class="stat-card stat-card-accent">
+            <span class="stat-value" id="stat-booked">0</span>
+            <span class="stat-label">Agendamentos</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-remaining">52</span>
+            <span class="stat-label">Vagas restantes</span>
+          </div>
+        </div>
+        <div class="counter-card admin-counter">
+          <div class="counter-numbers">
+            <span id="admin-counter-filled">0</span>
+            <span class="counter-sep">/</span>
+            <span>52</span>
+            <span class="counter-label">vagas preenchidas</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="admin-progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pesquisa -->
+    <section class="admin-search-section">
+      <div class="container">
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Pesquisar por nome, e-mail ou telefone..." />
+          <button class="btn-primary btn-sm" onclick="filterBookings()">Buscar</button>
+          <button class="btn-secondary btn-sm" onclick="clearSearch()">Limpar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabela -->
+    <section class="admin-table-section">
+      <div class="container">
+        <div class="table-header-row">
+          <h2 class="section-title" style="margin:0">Agendamentos</h2>
+          <span class="table-count" id="table-count">0 registros</span>
+        </div>
+        <div class="table-wrap">
+          <table id="bookings-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable('name')">Nome <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('email')">E-mail <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('phone')">Telefone <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('time')">Horário <span class="sort-icon">↕</span></th>
+                <th onclick="sortTable('createdAt')">Cadastro <span class="sort-icon">↕</span></th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody">
+              <tr><td colspan="6" class="table-empty">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Footer -->
+    <footer class="admin-footer">
+      <div class="container">
+        <p>© 2026 Wiener lab. — Massagem Corporativa · 30/06/2026</p>
+        <a href="index.html" class="admin-back-link">← Voltar ao site</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Modal: Confirmar Cancelamento -->
+  <div id="modal-cancel" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box modal-confirm-box">
+      <h2 class="modal-title" style="margin-bottom:1rem;">Cancelar agendamento?</h2>
+      <p style="color:#666; margin-bottom:1.5rem; font-size:.95rem;">Esta ação irá liberar a vaga automaticamente. Não pode ser desfeita.</p>
+      <div class="confirm-summary" style="margin-bottom:1.5rem;">
+        <div class="confirm-row"><span class="confirm-label">Nome</span><span class="confirm-value" id="cancel-name">—</span></div>
+        <div class="confirm-row"><span class="confirm-label">Horário</span><span class="confirm-value" id="cancel-time">—</span></div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn-secondary" onclick="closeCancelModal()">Voltar</button>
+        <button class="btn-danger" id="btn-confirm-cancel" onclick="confirmCancelBooking()">
+          <span id="btn-cancel-text">Sim, cancelar</span>
+          <span id="btn-cancel-spinner" class="btn-spinner" style="display:none;"></span>
+        </button>
+      </div>
+      <div id="cancel-error" class="form-error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <!-- SheetJS para exportação Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+  <!-- Configuração -->
+  <script src="config.js"></script>
+  <!-- Admin JS -->
+  <script src="admin.js"></script>
+</body>
+</html>

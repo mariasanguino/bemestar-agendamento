@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendamento de Massagem Corporativa</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ===================== TELA PRINCIPAL ===================== -->
+  <div id="screen-main" class="screen active">
+
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <img src="assets/logo.png" alt="Logo da empresa" class="logo" id="logo-img" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block';" />
+        <span id="logo-text" class="logo-text" style="display:none;">Wiener lab.</span>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Bem-estar corporativo</p>
+        <h1 class="hero-title">Agendamento de<br>Massagem</h1>
+        <p class="hero-subtitle">Um momento para você</p>
+        <p class="hero-desc">
+          Em meio à rotina e aos compromissos do dia, reservar alguns minutos para cuidar de si também faz a diferença.<br><br>
+          Pensando no bem-estar de todos, preparamos um momento especial de massagem para proporcionar mais leveza, relaxamento e disposição durante o fechamento do mês.
+        </p>
+        <div class="hero-meta">
+          <span>📅 <strong>Data:</strong> 30 de junho de 2026</span>
+          <span>⏱️ <strong>Duração:</strong> 15 minutos</span>
+          <span>👥 <strong>Uma sessão por colaborador</strong></span>
+          <span>📍 Escolha abaixo o horário de sua preferência.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contador de vagas -->
+    <section class="counter-section">
+      <div class="container">
+        <div class="counter-card">
+          <div class="counter-numbers">
+            <span id="counter-filled">0</span>
+            <span class="counter-sep">/</span>
+            <span id="counter-total">52</span>
+            <span class="counter-label">vagas preenchidas</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grade de horários -->
+    <section class="slots-section">
+      <div class="container">
+        <h2 class="section-title">Horários disponíveis</h2>
+        <div class="slots-grid" id="slots-grid">
+          <!-- Preenchido pelo JavaScript -->
+          <div class="loading-slots">
+            <div class="spinner"></div>
+            <p>Carregando horários...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <p>© 2026 Wiener lab. — Todos os direitos reservados.</p>
+        <a href="admin.html" class="admin-link">Área administrativa</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===================== MODAL: FORMULÁRIO ===================== -->
+  <div id="modal-form" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-form-title">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()" aria-label="Fechar">✕</button>
+      <div class="modal-header">
+        <p class="modal-eyebrow">Massagem Corporativa · 30/06/2026</p>
+        <h2 id="modal-form-title" class="modal-title">Confirme seus dados</h2>
+        <div class="modal-slot-badge" id="modal-slot-badge">08:00</div>
+      </div>
+      <form id="booking-form" novalidate>
+        <div class="form-group">
+          <label for="input-name">Nome completo <span class="required">*</span></label>
+          <input type="text" id="input-name" placeholder="Seu nome completo" autocomplete="name" required />
+          <span class="field-error" id="err-name"></span>
+        </div>
+        <div class="form-group">
+          <label for="input-email">E-mail corporativo <span class="required">*</span></label>
+          <input type="email" id="input-email" placeholder="seu@email.com.br" autocomplete="email" required />
+          <span class="field-error" id="err-email"></span>
+        </div>
+        <div class="form-group">
+          <label for="input-phone">Telefone <span class="required">*</span></label>
+          <input type="tel" id="input-phone" placeholder="(11) 99999-9999" autocomplete="tel" required />
+          <span class="field-error" id="err-phone"></span>
+        </div>
+        <div id="form-error" class="form-error-msg" style="display:none;"></div>
+        <button type="submit" class="btn-primary" id="btn-submit">
+          <span id="btn-submit-text">Continuar</span>
+          <span id="btn-submit-spinner" class="btn-spinner" style="display:none;"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: CONFIRMAÇÃO ===================== -->
+  <div id="modal-confirm" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+    <div class="modal-box modal-confirm-box">
+      <button class="modal-close" onclick="closeConfirm()" aria-label="Fechar">✕</button>
+      <div class="modal-header">
+        <p class="modal-eyebrow">Revise antes de confirmar</p>
+        <h2 id="modal-confirm-title" class="modal-title">Tudo certo?</h2>
+      </div>
+      <div class="confirm-summary">
+        <div class="confirm-row"><span class="confirm-label">Nome</span><span class="confirm-value" id="conf-name">—</span></div>
+        <div class="confirm-row"><span class="confirm-label">Data</span><span class="confirm-value">30/06/2026</span></div>
+        <div class="confirm-row"><span class="confirm-label">Horário</span><span class="confirm-value" id="conf-time">—</span></div>
+        <div class="confirm-row"><span class="confirm-label">E-mail</span><span class="confirm-value" id="conf-email">—</span></div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn-secondary" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn-primary" id="btn-confirm" onclick="finalizeBooking()">
+          <span id="btn-confirm-text">Confirmar agendamento</span>
+          <span id="btn-confirm-spinner" class="btn-spinner" style="display:none;"></span>
+        </button>
+      </div>
+      <div id="confirm-error" class="form-error-msg" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ===================== TELA: SUCESSO ===================== -->
+  <div id="screen-success" class="screen">
+    <div class="success-wrap">
+      <div class="success-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="#db0032" stroke-width="3"/>
+          <path d="M20 32 L28 40 L44 24" stroke="#db0032" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="success-title">Seu horário está reservado!</h2>
+      <p class="success-msg">Esperamos que esse momento seja uma oportunidade para relaxar, renovar as energias e tornar o seu dia ainda melhor.</p>
+      <div class="success-summary">
+        <div class="success-row"><span>👤</span> <span id="suc-name">—</span></div>
+        <div class="success-row"><span>📅</span> <span>30 de junho de 2026</span></div>
+        <div class="success-row"><span>🕒</span> <span id="suc-time">—</span></div>
+      </div>
+      <p class="success-tagline">Até breve! 💆</p>
+      <p class="success-email-note" id="suc-email-note"></p>
+      <button class="btn-secondary" onclick="resetToMain()">Voltar ao início</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Configuração -->
+  <script src="config.js"></script>
+  <!-- App principal -->
+  <script src="app.js"></script>
+</body>
+</html>
