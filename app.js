@@ -289,7 +289,7 @@ async function finalizeBooking() {
   const time    = selectedSlot;
   const max     = EVENT_CONFIG.maxPerSlot;
   const slotRef = db.collection('slots').doc(time);
-  const newId   = db.collection('bookings').doc().id; // gera ID antes da transação
+  const newId = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
   try {
     await db.runTransaction(async (tx) => {
