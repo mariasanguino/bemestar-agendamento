@@ -28,7 +28,7 @@ const EMAILJS_CONFIG = {
 
 // ── E-mail do administrador ─────────────────────────────────
 // Receberá cópia de todos os agendamentos
-const ADMIN_EMAIL = "maria.martins@wiener-lab.com.br";
+const ADMIN_EMAIL = "maria.sanguino09@gmail.com";
 
 // ── Configuração do Evento ───────────────────────────────────
 // Altere apenas se necessário
