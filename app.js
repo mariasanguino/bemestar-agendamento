@@ -289,62 +289,46 @@ async function finalizeBooking() {
   const time    = selectedSlot;
   const max     = EVENT_CONFIG.maxPerSlot;
   const slotRef = db.collection('slots').doc(time);
+  const newId   = db.collection('bookings').doc().id; // gera ID antes da transação
 
   try {
-    // ── Transação atômica ─────────────────────────────────────
-    // Garante que não haverá reserva além da capacidade máxima
-    const bookingRef = await db.runTransaction(async (tx) => {
+    await db.runTransaction(async (tx) => {
       const slotDoc = await tx.get(slotRef);
       const current = slotDoc.exists ? (slotDoc.data().booked || 0) : 0;
 
-      if (current >= max) {
-        throw new Error('SLOT_FULL');
-      }
+      if (current >= max) throw new Error('SLOT_FULL');
 
-      // Atualiza o contador de vagas
       tx.set(slotRef, { booked: current + 1 }, { merge: true });
 
-      // Cria o documento de agendamento
-      const newRef = db.collection('bookings').doc();
+      const newRef = db.collection('bookings').doc(newId);
       tx.set(newRef, {
-        name:      formData.name,
-        email:     formData.email,
-        phone:     formData.phone,
+        name:           formData.name,
+        email:          formData.email,
+        phone:          formData.phone,
         phoneFormatted: formData.phoneFormatted,
-        time:      time,
-        date:      EVENT_CONFIG.date,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        time:           time,
+        date:           EVENT_CONFIG.date,
+        createdAt:      firebase.firestore.FieldValue.serverTimestamp()
       });
-
-      return newRef;
     });
 
-    pendingBookingId = bookingRef.id;
+    try { await sendConfirmationEmail(formData.name, formData.email, time); }
+    catch (emailErr) { console.warn('E-mail não enviado:', emailErr); }
 
-    // ── Envia e-mail de confirmação ───────────────────────────
-    try {
-      await sendConfirmationEmail(formData.name, formData.email, time);
-    } catch (emailErr) {
-      // E-mail falhou mas agendamento foi salvo — não bloqueia o fluxo
-      console.warn('E-mail não enviado:', emailErr);
-    }
-
-    // ── Exibe tela de sucesso ─────────────────────────────────
     closeConfirm();
     showSuccessScreen(formData.name, time, formData.email);
 
   } catch (err) {
     console.error('Erro ao agendar:', err);
     const msg = err.message === 'SLOT_FULL'
-      ? 'Este horário acabou de ser preenchido. Por favor, escolha outro.'
-      : 'Erro ao confirmar agendamento. Tente novamente.';
+      ? 'Este horário acabou de ser preenchido. Escolha outro.'
+      : 'Erro ao confirmar. Tente novamente.';
     document.getElementById('confirm-error').textContent = msg;
     document.getElementById('confirm-error').style.display = 'block';
   } finally {
     setBtnLoading('btn-confirm', 'btn-confirm-text', 'btn-confirm-spinner', false);
   }
 }
-
 /* ============================================================
    EMAILJS — Envio de e-mails
    ============================================================ */
