@@ -8,7 +8,7 @@
 
 // ── Firebase Configuration ──────────────────────────────────
 // Obtenha esses valores em: Firebase Console → Configurações do Projeto → Seus apps
-const firebaseConfig = {
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBHqFRb6MmgZcePQ9jqrDYlN172-Livgl0",
   authDomain: "bemestar-agendamento.firebaseapp.com",
   projectId: "bemestar-agendamento",
