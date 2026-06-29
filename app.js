@@ -7,7 +7,7 @@
    - Validar dados do colaborador
    - Verificar duplicidade por e-mail e telefone
    - Gravar agendamento no Firestore com transação atômica
-   - Enviar e-mail de confirmação via EmailJS
+   - Enviar e-mail de confirmação via EmailJS (Colaborador e Admin)
    - Atualizar contador e barra de progresso
    ============================================================ */
 
@@ -329,13 +329,14 @@ async function finalizeBooking() {
     setBtnLoading('btn-confirm', 'btn-confirm-text', 'btn-confirm-spinner', false);
   }
 }
+
 /* ============================================================
    EMAILJS — Envio de e-mails
    ============================================================ */
 
 /**
  * Envia e-mail de confirmação para o colaborador
- * e cópia para o administrador.
+ * e também dispara a notificação para o administrador.
  * @param {string} name   - Nome do colaborador
  * @param {string} email  - E-mail do colaborador
  * @param {string} time   - Horário agendado
@@ -349,12 +350,29 @@ async function sendConfirmationEmail(name, email, time) {
     admin_email: ADMIN_EMAIL
   };
 
-  // E-mail para o colaborador
+  // 1. Envia o e-mail de confirmação para o colaborador
   await emailjs.send(
     EMAILJS_CONFIG.serviceId,
     EMAILJS_CONFIG.templateColaborador,
     templateParams
   );
+
+  // 2. Envia a notificação de novo agendamento para o Administrador
+  if (EMAILJS_CONFIG.templateAdmin) {
+    await emailjs.send(
+      EMAILJS_CONFIG.serviceId,
+      EMAILJS_CONFIG.templateAdmin,
+      templateParams
+    );
+  } else {
+    // Caso não exista 'templateAdmin' definido no seu config.js, 
+    // substitua 'contact_form' pelo ID real do seu template de administrador do EmailJS
+    await emailjs.send(
+      EMAILJS_CONFIG.serviceId,
+      'contact_form', 
+      templateParams
+    );
+  }
 }
 
 /* ============================================================
