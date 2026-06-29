@@ -258,7 +258,7 @@ async function handleFormSubmit(e) {
     }
 
     // ── Abre confirmação ──────────────────────────────────────
-    formData = { name, email, phone: rawPhone, phoneFormatted: phone };
+    formData = { name, email, phone: rawPhone, phoneFormatted: phone, time: selectedSlot };
     document.getElementById('conf-name').textContent  = name;
     document.getElementById('conf-time').textContent  = selectedSlot;
     document.getElementById('conf-email').textContent = email;
@@ -286,7 +286,7 @@ async function finalizeBooking() {
   setBtnLoading('btn-confirm', 'btn-confirm-text', 'btn-confirm-spinner', true);
   document.getElementById('confirm-error').style.display = 'none';
 
-  const time    = selectedSlot;
+  const time    = formData.time;
   const max     = EVENT_CONFIG.maxPerSlot;
   const slotRef = db.collection('slots').doc(time);
   const newId = Math.random().toString(36).slice(2) + Date.now().toString(36);
