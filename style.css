@@ -841,3 +841,12 @@ tr:hover td { background: var(--gray-bg); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
 }
+/* Correção para ocultar a tela de sucesso corretamente no início */
+#screen-success:not(.active) {
+  display: none !important;
+}
+
+/* Garante que a tela principal suma completamente quando o sucesso abrir */
+#screen-main:not(.active) {
+  display: none !important;
+}
