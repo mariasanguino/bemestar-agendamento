@@ -33,8 +33,8 @@ const ADMIN_EMAIL = "maria.sanguino09@gmail.com";
 // ── Configuração do Evento ───────────────────────────────────
 // Altere apenas se necessário
 const EVENT_CONFIG = {
-  date:       "30/06/2026",
-  dateFull:   "30 de junho de 2026",
+  date:       "30/09/2026",
+  dateFull:   "30 de setembro de 2026",
   maxPerSlot: 2,         // Vagas por horário
   totalSlots: 26,        // Total de horários disponíveis (sem contar intervalos)
   totalVagas: 52         // maxPerSlot × totalSlots
